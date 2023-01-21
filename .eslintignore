@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+requirements
+.vscode
+*.js
+*.json
+README.md
+.env*
+prisma/**/*
+docker-compose*
+Dockerfile*
+nginx.conf
+dump.rdb
+dump.sql
