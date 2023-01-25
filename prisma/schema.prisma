@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,188 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model athleteInfo {
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  martialArtId Int
+  gradeId      Int
+  teamId       Int
+  grades       grades       @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  martialArts  martialArts  @relation(fields: [martialArtId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  personalInfo personalInfo @relation(fields: [userId], references: [id], onDelete: Cascade, map: "athleteInfo_personalInfo_fkey")
+  teams        teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  enrolments   enrolments[]
+  prizes       prizes[]
+}
+
+model categories {
+  id         Int          @id @default(autoincrement())
+  gradeId    Int
+  name       String
+  weight     String
+  gender     gendertype
+  grades     grades       @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  enrolments enrolments[]
+  matchs     matchs[]
+}
+
+model cities {
+  id      Int      @id @default(autoincrement())
+  name    String
+  stateId Int
+  states  states   @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events  events[]
+}
+
+model enrolments {
+  id                                      Int         @id @default(autoincrement())
+  eventId                                 Int
+  athleteId                               Int
+  categoryId                              Int
+  athleteInfo                             athleteInfo @relation(fields: [athleteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  categories                              categories  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events                                  events      @relation(fields: [eventId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  matchs_matchs_firstFighterToenrolments  matchs?     @relation("matchs_firstFighterToenrolments")
+  matchs_matchs_secondFighterToenrolments matchs?     @relation("matchs_secondFighterToenrolments")
+}
+
+model events {
+  id           Int          @id @default(autoincrement())
+  name         String
+  logo         String?
+  cityId       Int
+  martialArtId Int
+  date         DateTime     @db.Date
+  local        String
+  description  String
+  ownerId      Int
+  enrolments   enrolments[]
+  cities       cities       @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  martialArts  martialArts  @relation(fields: [martialArtId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  personalInfo personalInfo @relation(fields: [ownerId], references: [id], onDelete: Cascade, map: "events_personalInfo_fkey")
+  matchs       matchs[]
+  prizes       prizes[]
+}
+
+model grades {
+  id            Int           @id @default(autoincrement())
+  name          String        @unique
+  martialArtsId Int
+  athleteInfo   athleteInfo[]
+  categories    categories[]
+  martialArts   martialArts   @relation(fields: [martialArtsId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model martialArts {
+  id          Int           @id(map: "martialArts_pk") @default(autoincrement())
+  name        String        @unique
+  athleteInfo athleteInfo[]
+  events      events[]
+  grades      grades[]
+  teams       teams[]
+}
+
+model matchs {
+  id                                          Int        @id @default(autoincrement())
+  eventId                                     Int
+  firstFighter                                Int        @unique
+  secondFighter                               Int        @unique
+  categoryId                                  Int
+  refereeId                                   Int
+  time                                        DateTime?  @db.Time(6)
+  mat                                         String?
+  categories                                  categories @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events                                      events     @relation(fields: [eventId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  enrolments_matchs_firstFighterToenrolments  enrolments @relation("matchs_firstFighterToenrolments", fields: [firstFighter], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referees                                    referees   @relation(fields: [refereeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  enrolments_matchs_secondFighterToenrolments enrolments @relation("matchs_secondFighterToenrolments", fields: [secondFighter], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  results                                     results[]
+}
+
+model personalInfo {
+  id          Int           @id(map: "personalInfo_pk") @default(autoincrement())
+  userId      Int
+  cpf         Int           @unique
+  firstName   String
+  lastName    String
+  birthday    DateTime      @db.Date
+  gender      gendertype
+  role        roletype
+  athleteInfo athleteInfo[]
+  events      events[]
+  users       users         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model prizes {
+  id          Int         @id @default(autoincrement())
+  athleteId   Int
+  eventId     Int
+  prize       prizetype
+  athleteInfo athleteInfo @relation(fields: [athleteId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  events      events      @relation(fields: [eventId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model referees {
+  id     Int      @id(map: "referee_pk") @default(autoincrement())
+  name   String   @unique(map: "referee_name_key")
+  matchs matchs[]
+}
+
+model results {
+  id          Int       @id @default(autoincrement())
+  matchId     Int
+  winner      String?
+  result      String
+  time        DateTime? @db.Time(6)
+  description String?
+  matchs      matchs    @relation(fields: [matchId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model sessions {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  token  String
+  users  users  @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model states {
+  id     Int      @id @default(autoincrement())
+  name   String
+  cities cities[]
+}
+
+model teams {
+  id            Int           @id(map: "teams_pk") @default(autoincrement())
+  name          String        @unique
+  martialArtsId Int
+  athleteInfo   athleteInfo[]
+  martialArts   martialArts   @relation(fields: [martialArtsId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id           Int            @id @default(autoincrement())
+  email        String
+  password     String
+  personalInfo personalInfo[]
+  sessions     sessions[]
+}
+
+enum gendertype {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum prizetype {
+  GOLD
+  SILVER
+  BRONZE
+}
+
+enum roletype {
+  ATHLETE
+  OWNER
+  REFEREE
 }
