@@ -10,11 +10,9 @@ datasource db {
 model athleteInfo {
   id           Int          @id @default(autoincrement())
   userId       Int
-  martialArtId Int
   gradeId      Int
   teamId       Int
   grades       grades       @relation(fields: [gradeId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  martialArts  martialArts  @relation(fields: [martialArtId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   personalInfo personalInfo @relation(fields: [userId], references: [id], onDelete: Cascade, map: "athleteInfo_personalInfo_fkey")
   teams        teams        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   enrolments   enrolments[]
@@ -80,12 +78,11 @@ model grades {
 }
 
 model martialArts {
-  id          Int           @id(map: "martialArts_pk") @default(autoincrement())
-  name        String        @unique
-  athleteInfo athleteInfo[]
-  events      events[]
-  grades      grades[]
-  teams       teams[]
+  id     Int      @id(map: "martialArts_pk") @default(autoincrement())
+  name   String   @unique
+  events events[]
+  grades grades[]
+  teams  teams[]
 }
 
 model matchs {
@@ -114,6 +111,7 @@ model personalInfo {
   birthday    DateTime      @db.Date
   gender      gendertype
   role        roletype
+  phone       Int?
   athleteInfo athleteInfo[]
   events      events[]
   users       users         @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)

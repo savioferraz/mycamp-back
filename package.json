@@ -14,11 +14,15 @@
     "prisma:generate-client": "npx prisma generate",
     "prisma:migration-generate": "npm run dev:load-envs prisma migrate dev",
     "prisma:migration-run": "prisma migrate deploy",
+    "prisma:seed": "npm run dev:load-envs prisma db seed",
     "start": "npx nodemon src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "savioferraz",
   "license": "ISC",
+  "prisma": {
+    "seed": "npm run dev:load-envs -- ts-node prisma/seed.ts"
+  },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
     "@types/bcrypt": "^5.0.0",
@@ -46,6 +50,7 @@
     "typescript-transform-paths": "^3.4.6"
   },
   "dependencies": {
+    "@brazilian-utils/brazilian-utils": "^1.0.0-rc.12",
     "@prisma/client": "^4.9.0",
     "@types/axios": "^0.14.0",
     "axios": "^1.2.3",

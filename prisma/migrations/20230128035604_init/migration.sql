@@ -11,7 +11,6 @@ CREATE TYPE "roletype" AS ENUM ('ATHLETE', 'OWNER', 'REFEREE');
 CREATE TABLE "athleteInfo" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
-    "martialArtId" INTEGER NOT NULL,
     "gradeId" INTEGER NOT NULL,
     "teamId" INTEGER NOT NULL,
 
@@ -104,6 +103,7 @@ CREATE TABLE "personalInfo" (
     "birthday" DATE NOT NULL,
     "gender" "gendertype" NOT NULL,
     "role" "roletype" NOT NULL,
+    "phone" INTEGER,
 
     CONSTRAINT "personalInfo_pk" PRIMARY KEY ("id")
 );
@@ -196,9 +196,6 @@ CREATE UNIQUE INDEX "teams_name_key" ON "teams"("name");
 
 -- AddForeignKey
 ALTER TABLE "athleteInfo" ADD CONSTRAINT "athleteInfo_gradeId_fkey" FOREIGN KEY ("gradeId") REFERENCES "grades"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "athleteInfo" ADD CONSTRAINT "athleteInfo_martialArtId_fkey" FOREIGN KEY ("martialArtId") REFERENCES "martialArts"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "athleteInfo" ADD CONSTRAINT "athleteInfo_personalInfo_fkey" FOREIGN KEY ("userId") REFERENCES "personalInfo"("id") ON DELETE CASCADE ON UPDATE CASCADE;
